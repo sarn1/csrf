@@ -40,7 +40,7 @@ class CSRF
       $this->set_expire( $min );
       $this->nonce = $this->encrypt( $this->create_uid() );
       $this->set_cookie();
-      return $this;
+      return $this->nonce;
     }
   }
 
