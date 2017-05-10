@@ -11,6 +11,6 @@ echo '<br>';
 // get a nonce then verify it
 echo $n->nonce;
 echo '<br>';
-if ( \Tyndale\CSRF::validate('UlFIVDh2aEN6aGlJK0wwOXR5bVo1eTFVSjhjNVlhOVZLb1RxRE1NcU9LOW05dWt5RnFSMGgrczdyTWFhNkdQWA==') ) {
+if ( \Tyndale\CSRF::validate('UlFIVDh2aEN6aGlJK0wwOXR5bVo1eGhnMVgwVFFhTlhhL0lKdVM5VEtOUm05dWt5RnFSMGgrczdyTWFhNkdQWA==') ) {
   echo 'valid';
 };

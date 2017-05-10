@@ -59,11 +59,11 @@ class CSRF
     $decrypted_data = json_decode( $n->decrypt( $encrypted_nonce ) ,true );
 
     if ( $n->lite_version ) {
-      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && isset($_COOKIE[$n->cookie_name]) && $_COOKIE[$n->cookie_name] == $encrypted_nonce ) {
+      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && $n->get_cookie() == $encrypted_nonce ) {
         return true;
       }
     } else {
-      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && $n->browser == $decrypted_data['browser'] && isset($_COOKIE[$n->cookie_name]) && $_COOKIE[$n->cookie_name] == $encrypted_nonce ) {
+      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && $n->browser == $decrypted_data['browser'] &&  $n->get_cookie() == $encrypted_nonce ) {
         return true;
       }
     }
