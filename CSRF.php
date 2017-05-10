@@ -11,14 +11,16 @@ Database store the nonces.
 */
 class CSRF
 {
-  private $db = false;                         // phase 2 - database storage
-  private $ip = null;
-  private $browser = null;
-  private $data = null;                        // data
-  private $expire = 60*60;                     // 1 hour
-  private $key = 'this is the insanely crazy password';  // encryption key - phase 2 make it random, store in db
+  private $expire = 60*60;                    // 1 hour
+  private $key = 'insanely crazy password';   // encryption key - phase 2 make it random, store in db
   private $cypher = 'AES-128-ECB';
   private $lite_version = true;               //lite version checks only IP, creates a smaller nonce
+  private $cookie_name = 'CSRFTOKEN';         //the name of the cookie that stores the nonce
+
+  private $db = false;                        // phase 2 - database storage
+  private $ip = null;
+  private $browser = null;
+  private $data = null;                       // data
 
   public $nonce = null;                       // for PT easy access else GETTER
 
@@ -37,6 +39,7 @@ class CSRF
       //double cookie defense method
       $this->set_expire( $min );
       $this->nonce = $this->encrypt( $this->create_uid() );
+      $this->set_cookie();
       return $this;
     }
   }
@@ -53,14 +56,14 @@ class CSRF
   public static function validate( $encrypted_nonce ) {
     $n = new \Tyndale\CSRF();
 
-    $decrypted_data = json_decode($n->decrypt( $encrypted_nonce ) ,true);
+    $decrypted_data = json_decode( $n->decrypt( $encrypted_nonce ) ,true );
 
-    if ($n->lite_version) {
-      if (time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip']) {
+    if ( $n->lite_version ) {
+      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && isset($_COOKIE[$n->cookie_name]) && $_COOKIE[$n->cookie_name] == $encrypted_nonce ) {
         return true;
       }
     } else {
-      if (time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && $n->browser == $decrypted_data['browser']) {
+      if ( time() <= $decrypted_data['expires'] && $n->ip == $decrypted_data['ip'] && $n->browser == $decrypted_data['browser'] && isset($_COOKIE[$n->cookie_name]) && $_COOKIE[$n->cookie_name] == $encrypted_nonce ) {
         return true;
       }
     }
@@ -77,7 +80,7 @@ class CSRF
   // create unique identifier
   private function create_uid () {
 
-    if ($this->lite_version) {
+    if ( $this->lite_version ) {
       $uid = [
         'ip'      => $this->ip,
         'expires' => time() + $this->expire,
@@ -89,7 +92,6 @@ class CSRF
         'expires' => time() + $this->expire,
       ];
     }
-
 
     $this->data = json_encode( $uid );
 
@@ -105,6 +107,14 @@ class CSRF
   private function decrypt( $encrypted_data )
   {
     return openssl_decrypt(base64_decode($encrypted_data), $this->cypher, $this->key);
+  }
+
+  private function set_cookie () {
+    setcookie( $this->cookie_name , $this->nonce, -1, '/', null, false, true );
+  }
+
+  private function get_cookie () {
+    return ( isset($_COOKIE[$this->cookie_name]) )? $_COOKIE[$this->cookie_name] : false;
   }
 
 

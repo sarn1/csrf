@@ -8,10 +8,9 @@ $n = new \Tyndale\CSRF();
 echo $n->generate_form_field();
 echo '<br>';
 
-
 // get a nonce then verify it
 echo $n->nonce;
 echo '<br>';
-if (\Tyndale\CSRF::validate('RGJtV2ZseE8wVUlUOU54MzRCbXNyYkRMd1hGMTVyMG9hcUlSellUclB3TUhIT25GblFQSFlKZGRqUExjVVhvYQ==')) {
+if ( \Tyndale\CSRF::validate('UlFIVDh2aEN6aGlJK0wwOXR5bVo1eTFVSjhjNVlhOVZLb1RxRE1NcU9LOW05dWt5RnFSMGgrczdyTWFhNkdQWA==') ) {
   echo 'valid';
 };
