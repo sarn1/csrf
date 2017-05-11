@@ -1,14 +1,11 @@
 <?php
 namespace Tyndale;
 
-/*
-todo - Phase 2 - Nonce Object - sarnphamornsuwana
-@author - sarnphamornsuwana
-@date - 8/16/2016
-@time - 4:49 PM
-
-Database store the nonces.
-*/
+/**
+ * Class CSRF
+ *
+ * @package Tyndale
+ */
 class CSRF
 {
   private $expire = 60*60;                    // 1 hour
@@ -24,6 +21,10 @@ class CSRF
 
   public $nonce = null;                       // for PT easy access else GETTER
 
+  
+  /**
+   * CSRF constructor.
+   */
   public function __construct()
   {
     $ip_parts = explode( ".", $_SERVER['REMOTE_ADDR'] );
@@ -31,7 +32,14 @@ class CSRF
     $this->browser = filter_var( $_SERVER['HTTP_USER_AGENT'],FILTER_SANITIZE_STRING );
   }
 
-  //create a nonce, allows you to set a expiration in minutes
+
+  /**
+   * Creates the nonce value and returns it
+   *
+   * @param null $min|int     The number of minutes before the nonce expires.
+   *
+   * @return null|string      Returns the generated nonce.
+   */
   public function create( $min = null ) {
     if ( $this->db ) {
       //synchronizer tokens (database - session) method - phase 2
@@ -44,7 +52,12 @@ class CSRF
     }
   }
 
-  //return nonce value in html hidden field
+
+  /**
+   * Generates the nonce HTML string.
+   *
+   * @return string   HTML hidden input tag containing nonce.
+   */
   public function generate_form_field() {
     if ( empty($this->nonce) ) {
       $this->create();
@@ -53,6 +66,14 @@ class CSRF
     return '<input type="hidden" name="nonce" value ="'.$this->nonce.'" />'."\n";
   }
 
+
+  /**
+   * Validates the nonce.
+   *
+   * @param $encrypted_nonce
+   *
+   * @return bool
+   */
   public static function validate( $encrypted_nonce ) {
     $n = new \Tyndale\CSRF();
 
@@ -70,14 +91,24 @@ class CSRF
     return false;
   }
 
-  // set expires in minutes
+
+  /**
+   * Sets the nonce expiration.
+   *
+   * @param $min|int  Set the expiration of the nonce in minutes.
+   */
   private function set_expire ( $min ) {
     if ( $min ) {
       $this->expire = $min * 60;
     }
   }
 
-  // create unique identifier
+
+  /**
+   * Creates the unique identifier makeup of the user.
+   *
+   * @return null|string Returns the unique identifier makeup of the visitor
+   */
   private function create_uid () {
 
     if ( $this->lite_version ) {
@@ -98,31 +129,48 @@ class CSRF
     return $this->data;
   }
 
-  // encrypt engine
+
+  /**
+   * Encrypt function.
+   *
+   * @param $data|string    The data to be encrypted.
+   *
+   * @return string         The encrypted string.
+   */
   private function encrypt( $data )
   {
     return base64_encode(openssl_encrypt($data, $this->cypher, $this->key));
   }
 
+
+  /**
+   * Decrypt function.
+   *
+   * @param $encrypted_data|string   The encrypted string.
+   *
+   * @return string                 The unencrypyred string
+   */
   private function decrypt( $encrypted_data )
   {
     return openssl_decrypt(base64_decode($encrypted_data), $this->cypher, $this->key);
   }
 
+
+  /**
+   * Sets the nonce value to the cookie.
+   */
   private function set_cookie () {
     setcookie( $this->cookie_name , $this->nonce, -1, '/', null, false, true );
   }
 
+
+  /**
+   * Get the nonce value from the cookie.
+   *
+   * @return bool|string  Gets the value in the cookie if it exists, else returns false
+   */
   private function get_cookie () {
     return ( isset($_COOKIE[$this->cookie_name]) )? $_COOKIE[$this->cookie_name] : false;
   }
-
-
-  /*
-   * Phase 2 - Database
-   * private insert_db - stores the nonce
-   * private check_db - validates the nonce, delete if found
-   * private clean_db - clean up old nonce
-   */
 
 }
