@@ -33,6 +33,12 @@ echo (new \Tyndale\CSRF())->create(5);
 
 Feel free to take it and use/modify as you please.
 
+
+## License
+
+The code is open source and available under the [MIT License](LICENSE.md).
+
+
 ## For More Information
 
 * [OWASP: Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Double_Submit_Cookies)

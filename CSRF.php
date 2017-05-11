@@ -21,7 +21,7 @@ class CSRF
 
   public $nonce = null;                       // for PT easy access else GETTER
 
-  
+
   /**
    * CSRF constructor.
    */
