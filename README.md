@@ -14,18 +14,18 @@ $echo (new \Tyndale\CSRF())->generate_form_field();
 ```
 Which would yield this output:
 
-```
+```html
 <input type="hidden" name="nonce" value ="UlFIVDh2aEN6aGlJK0wwOXR5bVo1eEcwN2grNEZXSGdqR25QT2FEN291Um05dWt5RnFSMGgrczdyTWFhNkdQWA==" />
 ```
 You can then do something like the following snippet to verify the nonce.
-```
+```php
 if ( \Tyndale\CSRF::validate($_POST['nonce']) ) {
   echo 'valid';
 };
 ```
 If you just want just the nonce value, that is possible as well. The following code would provide you a nonce value with an expiration of 5 minutes (default is 1 hour if the parameter is left empty).
 
-```
+```php
 echo (new \Tyndale\CSRF())->create(5);
 ```
 
